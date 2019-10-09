@@ -1,0 +1,55 @@
+
+version: '3'
+
+services:
+  mysql:
+    container_name: bootstrap-mysql
+    environment:
+      MYSQL_DATABASE: bootstrap
+      MYSQL_ROOT_PASSWORD: local_password
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/init:/docker-entrypoint-initdb.d
+
+  backend:
+    stdin_open: true
+    tty: true
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    container_name: bootstrap-backend
+    command: make restart
+    environment:
+      DB_NAME: ${DB_NAME:-bootstrap}
+      DB_PASSWORD: ${DB_PASSWORD:-local_password}
+      DB_USER: ${DB_USER:-root}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_HOSTNAME: ${DB_HOSTNAME:-mysql}
+      SERVER_HTTP_PORT: ${SERVER_HTTP_PORT:-8080}
+      SERVER_HTTPS_PORT: ${SERVER_HTTP_PORT:-8443}
+      SERVER_HOSTNAME: "0.0.0.0"
+      AC_ALLOW_ORIGIN: localhost:3000
+    volumes:
+      - ./backend:/src
+      - ./sbt_cache:/sbt
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    container_name: bootstrap-frontend
+    command: yarn start
+    environment:
+      REACT_APP_ENV: ${REACT_APP_ENV:-local}
+    volumes:
+      - ./frontend:/src
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

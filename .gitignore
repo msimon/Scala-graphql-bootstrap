@@ -1,0 +1,7 @@
+*~
+\#*\#
+.\#*
+target/
+.metals
+sbt_cache
+todo.txt

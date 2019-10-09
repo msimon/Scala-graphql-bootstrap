@@ -1,0 +1,6 @@
+{
+  "name": "Bootstrap",
+  "description": "A bootstrap project that setup the groundwork for a scala/reactjs project using graphql",
+  "repository": "https://github.com/msimon/Scala-graphql-bootstrap",
+  "keywords": ["scala", "sangria", "graphql" ]
+}
